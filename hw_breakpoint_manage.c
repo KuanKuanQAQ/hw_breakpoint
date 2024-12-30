@@ -72,7 +72,7 @@ static void hw_bp_show_one(struct hw_bp_manage_info *bp_info, int index)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_lock();
 #else
-	get_online_cpus();
+	cpus_read_lock();
 #endif
 	for_each_possible_cpu(cpu) {
 		if (bp_info->mask & 1 << cpu) {
@@ -86,7 +86,7 @@ static void hw_bp_show_one(struct hw_bp_manage_info *bp_info, int index)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_unlock();
 #else
-	put_online_cpus();
+	cpus_read_unlock();
 #endif
 }
 
@@ -436,7 +436,7 @@ static void hw_fill_report_data(struct hw_bp_manage_info *bp_info,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_lock();
 #else
-	get_online_cpus();
+	cpus_read_lock();
 #endif
 	for_each_possible_cpu(cpu) {
 		if (bp_info->mask & 1 << cpu) {
@@ -452,7 +452,7 @@ static void hw_fill_report_data(struct hw_bp_manage_info *bp_info,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_unlock();
 #else
-	put_online_cpus();
+	cpus_read_unlock();
 #endif
 }
 

@@ -39,6 +39,8 @@ char *hw_proc_write_example = {
 	"\tThe first step:\n"
 	"\t\techo add wp3 4 hw_test_value0 > /proc/breakpoint, add a watchpoint at "
 	"&hw_test_value0\n"
+	"\t\techo add wp1 14942208 _stext > /proc/breakpoint, add a watchpoint at "
+	"kernel text\n"	
 	"\tThe second step:\n"
 	"\t\techo write 0 0 > /proc/breakpoint, write hw_test_value0\n"
 	"\tThe third step:\n"
@@ -51,8 +53,9 @@ char *hw_proc_write_example = {
 /*seq show*/
 static int hw_proc_show(struct seq_file *m, void *v)
 {
-	hw_bp_info_list *info = NULL, *node = NULL;
+		hw_bp_info_list *info = NULL, *node = NULL;
 	int i = 0, index = 0;
+	int j = 0;
 
 	/*get info*/
 	info = hw_get_bp_infos();
@@ -80,6 +83,13 @@ static int hw_proc_show(struct seq_file *m, void *v)
 					node->attr[i].times.read,
 					node->attr[i].times.write,
 					node->attr[i].times.exec);
+				if (node->attr[i].times.read == 0) {
+					continue;
+				}
+				seq_printf(m, "cpu[%d] trigger read addrs:\n", i);
+				for (j = 1; j <= node->attr[i].times.read; j++) {
+					seq_printf(m, "\t%pS\n", node->attr[i].times.read_addr[j]);
+				}
 			}
 		}
 		hw_free_bp_infos(info);

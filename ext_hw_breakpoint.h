@@ -4,14 +4,17 @@
 #include <asm/hw_breakpoint.h>
 #include <linux/hw_breakpoint.h>
 #include <asm/debug-monitors.h>
+#include <linux/version.h>
 
 #define HW_SYMS_FUNC(x) g_kernel_api.fun.x
 #define HW_SYMS_VAL(x) g_kernel_api.val.x
 
+#define MAX_READTIMES 1024
 typedef struct hw_trigger_times {
 	u64 read;
 	u64 write;
 	u64 exec;
+	u64 read_addr[MAX_READTIMES];
 } hw_trigger_times;
 
 typedef struct hw_bp_callback_data {

@@ -4,6 +4,7 @@
 #include <linux/slab.h>
 #include <linux/sched/debug.h>
 #include <linux/version.h>
+#include <linux/kgdb.h>
 #include <asm/system_misc.h>
 #include <asm/debug-monitors.h>
 #include "ext_hw_breakpoint.h"
@@ -706,6 +707,11 @@ static void hw_trigger_handler(struct pt_regs *regs)
 			/*The user handler only within the range of addresses that are expected to be detected*/
 			if (wp->info.access_type & HW_BREAKPOINT_R) {
 				wp->attr.times.read++;
+				u64 tmp = wp->attr.times.read;
+				if (tmp > MAX_READTIMES) {
+					pr_info("tmp > MAX_READTIMES\n");
+				}
+				wp->attr.times.read_addr[tmp] = regs->pc;
 			} else if (wp->info.access_type & HW_BREAKPOINT_W) {
 				wp->attr.times.write++;
 			}
@@ -724,7 +730,7 @@ static void hw_trigger_handler(struct pt_regs *regs)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 static int hw_step_brk_fn(struct pt_regs *regs, unsigned long esr)
 #else
-static int hw_step_brk_fn(struct pt_regs *regs, unsigned int esr)
+static int hw_step_brk_fn(struct pt_regs *regs, unsigned long esr)
 #endif
 {
 	int *kernel_step;
@@ -741,7 +747,7 @@ static int hw_step_brk_fn(struct pt_regs *regs, unsigned int esr)
 		return DBG_HOOK_ERROR;
 	}
 #ifdef CONFIG_KGDB
-	kgdb_handle_exception(0, SIGTRAP, 0, regs);
+	// kgdb_handle_exception(0, SIGTRAP, 0, regs);
 #endif
 
 	return DBG_HOOK_HANDLED;

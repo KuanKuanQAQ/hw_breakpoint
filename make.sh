@@ -12,10 +12,8 @@ hotbot_key=$KERNEL_DIR/certs/hobot_fixed_signing_key.pem
 sign_key=$KERNEL_DIR/certs/signing_key.x509
 sign_tools=$KERNEL_DIR/scripts/sign-file
 
-rm -rf .vscode/compile_commands.json
 make clean
-bear make
-mv compile_commands.json .vscode/compile_commands.json
+make
 
 #给驱动加签名
 $sign_tools sha512 $hotbot_key $sign_key ./hw_break.ko

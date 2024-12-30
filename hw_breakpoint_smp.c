@@ -142,7 +142,7 @@ void hw_bp_unregister(struct hw_bp_info *__percpu *bp, int state)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_lock();
 #else
-	get_online_cpus();
+	cpus_read_lock();
 #endif
 	for_each_possible_cpu(cpu) {
 		if (state & 1 << cpu) {
@@ -152,7 +152,7 @@ void hw_bp_unregister(struct hw_bp_info *__percpu *bp, int state)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_unlock();
 #else
-	put_online_cpus();
+	cpus_read_unlock();
 #endif
 }
 
@@ -171,7 +171,7 @@ int hw_bp_register(struct hw_bp_info *__percpu *cpu_events, hw_bp_attr *attr,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_lock();
 #else
-	get_online_cpus();
+	cpus_read_lock();
 #endif
 	for_each_online_cpu(cpu) {
 		bp = hw_bp_info_alloc(attr, cpu);
@@ -186,7 +186,7 @@ int hw_bp_register(struct hw_bp_info *__percpu *cpu_events, hw_bp_attr *attr,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	cpus_read_unlock();
 #else
-	put_online_cpus();
+	cpus_read_unlock();
 #endif
 
 	return 0;
